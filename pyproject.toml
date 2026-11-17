@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topaneu-infer"
+version = "1.0.0"
+description = "Inference for the TopAneu 2026 aneurysm detection and location challenge"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1",
+    "numpy",
+    "scipy",
+    "scikit-image",
+    "SimpleITK",
+    "nibabel",
+    "safetensors",
+    "dynamic-network-architectures>=0.4.4,<0.5",
+    "timm",
+    "einops",
+]
+
+[tool.setuptools]
+packages = ["topaneu_infer", "topaneu_infer.location"]

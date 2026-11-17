@@ -1,0 +1,15 @@
+topaneu2026-inference
+Copyright 2026 Applied Computer Vision Lab (ACVL), Helmholtz Imaging, Division of Medical Image
+Computing, German Cancer Research Center (DKFZ)
+
+This product includes software derived from nnU-Net (https://github.com/MIC-DKFZ/nnUNet),
+Copyright German Cancer Research Center (DKFZ), licensed under the Apache License 2.0:
+topaneu_infer/resampling.py and the preprocessing, sliding-window and export logic in
+topaneu_infer/segmenter.py.
+
+The directory vessel/ contains the TopAneu 2026 organizers' published vessel segmentation code
+(an nnU-Net v2 derivative, Apache License 2.0), included unchanged apart from model selection
+options in vessel/run_inference.py.
+
+Network architectures come from dynamic-network-architectures
+(https://github.com/MIC-DKFZ/dynamic-network-architectures, Apache License 2.0).
