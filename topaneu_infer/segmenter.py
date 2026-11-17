@@ -160,6 +160,10 @@ class Segmenter:
         self.network = build_network(self.cfg["architecture"], self.cfg["num_input_channels"],
                                      self.num_classes, self.patch_size)
         self.network.load_state_dict(self.weights[0], strict=True)
+        # moved once, outside inference mode: parameters created under inference mode cannot be
+        # overwritten by the next fold's load_state_dict
+        self.network = self.network.to(self.device)
+        self.network.eval()
 
     # ---- preprocessing --------------------------------------------------------------------------
 
@@ -196,8 +200,6 @@ class Segmenter:
     @torch.inference_mode()
     def _sliding_window(self, data: torch.Tensor) -> torch.Tensor:
         """Gaussian-weighted sliding window; accumulates on the CPU in half precision."""
-        self.network = self.network.to(self.device)
-        self.network.eval()
         autocast = torch.autocast(self.device.type, enabled=True) if self.device.type == "cuda" \
             else _NullContext()
         with autocast:
