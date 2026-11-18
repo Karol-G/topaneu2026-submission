@@ -63,7 +63,9 @@ This repository reproduces the predictions of the submitted algorithm. It contai
 git clone https://github.com/Karol-G/topaneu2026-submission.git
 cd topaneu2026-submission
 
-# model tarball (3.0 GB): XXX
+# model tarball (3.0 GB), also at https://syncandshare.desy.de/index.php/s/fGnEo8NdzsEPZa4
+curl -L -o topaneu2026_model.tar.gz \
+    "https://syncandshare.desy.de/index.php/s/fGnEo8NdzsEPZa4/download?path=%2F&files=topaneu2026_model.tar.gz"
 sha256sum topaneu2026_model.tar.gz
 # ccedc235ea43bdc62693ff876773140f856368858da801efbb07c0ca92e2c615
 mkdir model && tar -xzf topaneu2026_model.tar.gz -C model
