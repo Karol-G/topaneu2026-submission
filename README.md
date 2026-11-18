@@ -147,6 +147,22 @@ Task 2 writes `output/images/aneurysm-segmentation/output.mha`. Task 1 writes
 To upload the model to Grand Challenge, pack the extracted folder with
 `bash tools/make_model_tarball.sh model model.tar.gz`. The image contains code only.
 
+### 2c. Self-contained image
+
+`container/Dockerfile.standalone` builds one image that also contains the model weights, so no
+model tarball, mount or download is needed at run time. Build it from the repository root with the
+extracted tarball in `model/`:
+
+```bash
+docker build -f container/Dockerfile.standalone -t topaneu-26-selfcontained .
+docker run --rm --gpus all --shm-size 8g --network none \
+    -v "$PWD/input:/input:ro" -v "$PWD/output:/output" topaneu-26-selfcontained
+```
+
+It writes both outputs (Task 1 json and Task 2 mask) by default; `-e TOPANEU_TASK=1` or
+`-e TOPANEU_TASK=2` writes only one. `container/WEIGHTS.md` (in the image at
+`/opt/ml/model/README.md`) describes the weights and their training data.
+
 ## References
 
 - Isensee F. et al. *nnU-Net: a self-configuring method for deep learning-based biomedical image

@@ -1,0 +1,10 @@
+# like .dockerignore, but the model folder is part of this image
+.git
+**/__pycache__
+**/*.egg-info
+tools
+out
+input
+output
+*.tar.gz
+.venv

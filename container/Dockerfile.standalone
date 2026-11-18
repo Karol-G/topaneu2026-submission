@@ -1,0 +1,45 @@
+# Self-contained TopAneu 2026 image: code AND model weights, no download or model tarball needed.
+#
+#   # from the repository root, with the extracted model tarball in ./model (see README)
+#   docker build -f container/Dockerfile.standalone -t topaneu-26-selfcontained .
+#
+# Writes both outputs by default (Task 1 json and Task 2 mask); `-e TOPANEU_TASK=1` or `=2` writes
+# only one. Inputs and outputs follow the Grand Challenge layout (README, "Run the container").
+
+FROM --platform=linux/amd64 pytorch/pytorch:2.8.0-cuda12.6-cudnn9-runtime
+
+ENV PYTHONUNBUFFERED=1 \
+    OMP_NUM_THREADS=4 \
+    MKL_NUM_THREADS=4 \
+    nnUNet_n_proc_DA=1
+
+RUN groupadd -r user && useradd -m --no-log-init -r -g user user
+WORKDIR /opt/app
+
+COPY --chown=user:user requirements.txt /opt/app/
+RUN python -m pip install --no-cache-dir --no-color -r /opt/app/requirements.txt
+
+COPY --chown=user:user vessel /opt/vessel
+
+# the model weights (one set: trained on the TopAneu 2026 training data only)
+COPY --chown=user:user model/ct /opt/ml/model/ct
+COPY --chown=user:user model/mr /opt/ml/model/mr
+COPY --chown=user:user model/vessel /opt/ml/model/vessel
+COPY --chown=user:user model/mappings /opt/ml/model/mappings
+COPY --chown=user:user model/params.json /opt/ml/model/params.json
+COPY --chown=user:user container/WEIGHTS.md /opt/ml/model/README.md
+
+COPY --chown=user:user topaneu_infer /opt/app/topaneu_infer
+COPY --chown=user:user container/main.py /opt/app/
+
+LABEL org.opencontainers.image.title="TopAneu 2026 submission, self-contained" \
+      org.opencontainers.image.source="https://github.com/Karol-G/topaneu2026-submission" \
+      topaneu.weights="TopAneu 2026 training data only (no external training data)"
+
+ENV TOPANEU_TASK=both \
+    TOPANEU_MODEL_DIR=/opt/ml/model \
+    TOPANEU_VESSEL_CODE=/opt/vessel \
+    PYTHONPATH=/opt/app
+
+USER user
+ENTRYPOINT ["python", "main.py"]

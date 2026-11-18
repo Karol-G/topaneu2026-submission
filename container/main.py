@@ -11,7 +11,9 @@ modality:
     Task 1: /output/detected-aneurysm-locations.json        list of location class ids
     Task 2: /output/images/aneurysm-segmentation/output.mha  uint8 mask, values 0-52
 
-TOPANEU_TASK (baked in at build time) selects which output is written.
+TOPANEU_TASK selects which output is written: 1, 2, or "both". The Grand Challenge images bake in
+1 or 2 at build time; the self-contained image defaults to "both" and can be overridden with
+`docker run -e TOPANEU_TASK=1`.
 """
 import glob
 import json
@@ -26,7 +28,9 @@ from topaneu_infer import run_case
 
 INPUT_PATH = Path("/input")
 OUTPUT_PATH = Path("/output")
-TASK = int(os.environ.get("TOPANEU_TASK", "2"))
+TASK = os.environ.get("TOPANEU_TASK", "2").strip().lower()
+if TASK not in ("1", "2", "both"):
+    raise SystemExit(f"TOPANEU_TASK must be 1, 2 or both, got {TASK!r}")
 MODEL_DIR = Path(os.environ.get("TOPANEU_MODEL_DIR", "/opt/ml/model"))
 VESSEL_CODE = Path(os.environ.get("TOPANEU_VESSEL_CODE", "/opt/vessel"))
 
@@ -39,10 +43,10 @@ def run():
     }[slugs]
     image = load_image_file(INPUT_PATH / "images" / folder)
     segmentation, location_ids = run_case(image, modality, MODEL_DIR, VESSEL_CODE)
-    if TASK == 1:
+    if TASK in ("1", "both"):
         write_json_file(OUTPUT_PATH / "detected-aneurysm-locations.json",
                         [int(v) for v in location_ids])
-    else:
+    if TASK in ("2", "both"):
         out = OUTPUT_PATH / "images" / "aneurysm-segmentation"
         out.mkdir(parents=True, exist_ok=True)
         SimpleITK.WriteImage(segmentation, out / "output.mha", useCompression=True)
