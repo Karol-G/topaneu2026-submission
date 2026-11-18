@@ -3,3 +3,8 @@
 **/*.egg-info
 model
 tools
+out
+input
+output
+*.tar.gz
+.venv
