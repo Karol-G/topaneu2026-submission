@@ -65,7 +65,7 @@ cd topaneu2026-submission
 
 # model tarball (3.0 GB): XXX
 sha256sum topaneu2026_model.tar.gz
-# c007b3a6e7189c4412c82f17a1012e366ac531fb4eb63d7b81a928bf535ec8c9
+# ccedc235ea43bdc62693ff876773140f856368858da801efbb07c0ca92e2c615
 mkdir model && tar -xzf topaneu2026_model.tar.gz -C model
 ```
 
